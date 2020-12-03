@@ -1,0 +1,27 @@
+USE master
+GO
+IF NOT EXISTS (
+   SELECT name
+   FROM sys.databases
+   WHERE name = N'LoginDB'
+)
+CREATE DATABASE [LoginDB]
+GO
+
+ALTER DATABASE [LoginDB] SET QUERY_STORE = ON
+GO
+
+USE [LoginDB]
+IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL
+DROP TABLE dbo.Users
+GO
+
+CREATE TABLE dbo.Users
+(
+   ID       INT             NOT NULL PRIMARY KEY,
+   Name     [NVARCHAR](40)  NOT NULL,
+   FullName [NVARCHAR](80)  NOT NULL,
+   Email    [NVARCHAR](50)  NOT NULL,
+   Password [NVARCHAR](40)  NOT NULL,
+);
+GO
