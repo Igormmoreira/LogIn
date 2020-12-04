@@ -10,6 +10,8 @@ namespace LogIn_Desktop
         private Connection connection;
         private SqlParameter paramEmail;
         private SqlParameter paramPass;
+        private SqlParameter paramName;
+        private SqlParameter paramFullname;
         private bool RegisterMode = false;
 
         public FmrLogin()
@@ -22,6 +24,8 @@ namespace LogIn_Desktop
             connection = new Connection();
             paramEmail = new SqlParameter();
             paramPass = new SqlParameter();
+            paramName = new SqlParameter();
+            paramFullname = new SqlParameter();
         }
 
         private void BtnLogin_Click(object sender, EventArgs e)
@@ -32,6 +36,7 @@ namespace LogIn_Desktop
             }
             else
             {
+                RegisterUser(txtFullName.Text, txtEmail.Text, txtPassword.Text);
                 // Salvar no banco
             }
         }
@@ -85,6 +90,34 @@ namespace LogIn_Desktop
                 return Id[0];
             }
             else return 0;
+        }
+
+        private void RegisterUser(string Fullname, string Email, string Pass)
+        {
+            string Sql = " INSERT INTO Users (Name, FullName, Email, Password)" +
+                         " VALUES (@name, @fullname, @email, @password); ";
+            SqlCommand Query = connection.Query(Sql);
+
+            paramName.ParameterName = "@name";
+            paramName.Value = Fullname.Substring(0, Fullname.IndexOf(' '));
+            Query.Parameters.Add(paramName);
+
+            paramFullname.ParameterName = "@fullname";
+            paramFullname.Value = Fullname;
+            Query.Parameters.Add(paramFullname);
+
+            paramEmail.ParameterName = "@email";
+            paramEmail.Value = Email;
+            Query.Parameters.Add(paramEmail);
+
+            paramPass.ParameterName = "@password";
+            paramPass.Value = Pass;
+            Query.Parameters.Add(paramPass);
+
+            //int InsertedLines = 
+                Query.ExecuteNonQuery();
+
+            //if (InsertedLines <= 0) MessageBox.Show("Error inserting data into Database.");
         }
 
         private void AlterLoginRegisterMode()
