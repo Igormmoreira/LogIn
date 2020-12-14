@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace LogIn_Desktop
 {
@@ -84,6 +85,7 @@ namespace LogIn_Desktop
             }
 
             MessageBox.Show(Message);
+            Query.Parameters.Clear();
 
             if (Id.Count == 1)
             {
@@ -98,26 +100,55 @@ namespace LogIn_Desktop
                          " VALUES (@name, @fullname, @email, @password); ";
             SqlCommand Query = connection.Query(Sql);
 
+            // Valid Vars
+            string ValidFullName = "";
+            string ValidName     = "";
+            string ValidEmail    = "";
+            string ValidPass     = "";
+
+            // Validate Names
+            int NamesCount = Fullname.ToString().Trim().Count(x => x == ' ');
+            if (NamesCount < 0)           
+            {
+                ValidFullName   = Fullname;
+                ValidName       = Fullname.Substring(0, Fullname.IndexOf(' '));
+            }
+            
+            // Validate Email
+            ValidEmail = Email;
+
+            // Validate Pass
+            ValidPass = Pass;
+
+            // Fill Params
             paramName.ParameterName = "@name";
-            paramName.Value = Fullname.Substring(0, Fullname.IndexOf(' '));
-            Query.Parameters.Add(paramName);
+            paramName.Value = ValidName;
 
             paramFullname.ParameterName = "@fullname";
-            paramFullname.Value = Fullname;
-            Query.Parameters.Add(paramFullname);
+            paramFullname.Value = ValidFullName;
 
             paramEmail.ParameterName = "@email";
             paramEmail.Value = Email;
-            Query.Parameters.Add(paramEmail);
 
             paramPass.ParameterName = "@password";
-            paramPass.Value = Pass;
+            paramPass.Value = ValidPass;
+            
+            // Add Params
+            Query.Parameters.Add(paramName);
+            Query.Parameters.Add(paramFullname);
+            Query.Parameters.Add(paramEmail);
             Query.Parameters.Add(paramPass);
 
-            //int InsertedLines = 
+            // Validate Unique User
+
+            // Insert Into Database
+            int InsertedLines = 
                 Query.ExecuteNonQuery();
 
-            //if (InsertedLines <= 0) MessageBox.Show("Error inserting data into Database.");
+            // Validate Inserted Lines
+            if (InsertedLines <= 0) MessageBox.Show("Error inserting data into Database.");
+            
+            Query.Parameters.Clear();
         }
 
         private void AlterLoginRegisterMode()
